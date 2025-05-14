@@ -31,8 +31,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::resource("role", RoleController::class)->middleware(['abilities:role_management']);
 
     // User Controller
-    Route::put('user-archived/{id}', [UserController::class, 'archived'])->middleware(['abilities:user_management']);
-    Route::resource("user", UserController::class)->middleware(['abilities:user_management']);
+    // Route::put('user-archived/{id}', [UserController::class, 'archived'])->middleware(['abilities:user_management']);
+    // Route::resource("user", UserController::class)->middleware(['abilities:user_management']);
 
     // auth controller
     Route::patch('changepassword', [AuthController::class, 'changedPassword']);

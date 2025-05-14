@@ -59,6 +59,6 @@ class LocationController extends Controller
             }
         }
 
-        return $this->responseSuccess('Sync location successfully');
+        return $this->responseCreated('Sync location successfully');
     }
 }
