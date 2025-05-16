@@ -29,11 +29,11 @@ class CompanyController extends Controller
     public function store(CompanyRequest $request)
     {
 
-        Companies::upsert(
-            $request->input('companies'),
-            ['sync_id'],
-            ['company_code', 'company_name', 'updated_at', 'deleted_at']
-        );
+        // Companies::upsert(
+        //     $request->input('companies'),
+        //     ['sync_id'],
+        //     ['company_code', 'company_name', 'updated_at', 'deleted_at']
+        // );
 
         return $this->responseCreated('Sync companies successfully');
     }

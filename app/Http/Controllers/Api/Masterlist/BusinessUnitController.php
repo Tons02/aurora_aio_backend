@@ -30,11 +30,11 @@ class BusinessUnitController extends Controller
     public function store(BusinessUnitRequest $request)
     {
 
-        BusinessUnit::upsert(
-            $request->input('business_units'),
-            ['sync_id'],
-            ['business_unit_code', 'business_unit_name', 'company_id', 'updated_at', 'deleted_at']
-        );
+        // BusinessUnit::upsert(
+        //     $request->input('business_units'),
+        //     ['sync_id'],
+        //     ['business_unit_code', 'business_unit_name', 'company_id', 'updated_at', 'deleted_at']
+        // );
 
         return $this->responseCreated('Sync business unit successfully');
     }

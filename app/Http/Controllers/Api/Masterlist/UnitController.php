@@ -30,11 +30,11 @@ class UnitController extends Controller
     public function store(UnitRequest $request)
     {
 
-        Unit::upsert(
-            $request->input('units'),
-            ['sync_id'],
-            ['unit_code', 'unit_name', 'department_id', 'updated_at', 'deleted_at']
-        );
+        // Unit::upsert(
+        //     $request->input('units'),
+        //     ['sync_id'],
+        //     ['unit_code', 'unit_name', 'department_id', 'updated_at', 'deleted_at']
+        // );
 
         return $this->responseCreated('Sync Units successfully');
     }

@@ -30,11 +30,11 @@ class DepartmentController extends Controller
     public function store(DepartmentRequest $request)
     {
 
-        Department::upsert(
-            $request->input('departments'),
-            ['sync_id'],
-            ['department_code', 'department_name', 'business_unit_id', 'updated_at', 'deleted_at']
-        );
+        // Department::upsert(
+        //     $request->input('departments'),
+        //     ['sync_id'],
+        //     ['department_code', 'department_name', 'business_unit_id', 'updated_at', 'deleted_at']
+        // );
 
         return $this->responseCreated('Sync Department successfully');
     }

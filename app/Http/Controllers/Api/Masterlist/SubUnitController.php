@@ -29,11 +29,11 @@ class SubUnitController extends Controller
 
     public function store(SubUnitRequest $request)
     {
-        SubUnit::upsert(
-            $request->input('sub_units'),
-            ['sync_id'],
-            ['sub_unit_code', 'sub_unit_name', 'unit_id', 'updated_at', 'deleted_at']
-        );
+        // SubUnit::upsert(
+        //     $request->input('sub_units'),
+        //     ['sync_id'],
+        //     ['sub_unit_code', 'sub_unit_name', 'unit_id', 'updated_at', 'deleted_at']
+        // );
 
         return $this->responseCreated('Sync Sub unit successfully');
     }

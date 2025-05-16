@@ -29,35 +29,35 @@ class LocationController extends Controller
 
     public function store(LocationRequest $request)
     {
-        $locationsData = $request->input('locations');
+        // $locationsData = $request->input('locations');
 
-        // Prepare data for upsert (exclude 'sub_units')
-        $locationsForUpsert = array_map(function ($location) {
-            return [
-                'sync_id' => $location['sync_id'],
-                'location_code' => $location['location_code'],
-                'location_name' => $location['location_name'],
-                'updated_at' => $location['updated_at'],
-                'deleted_at' => $location['deleted_at']
-            ];
-        }, $locationsData);
+        // // Prepare data for upsert (exclude 'sub_units')
+        // $locationsForUpsert = array_map(function ($location) {
+        //     return [
+        //         'sync_id' => $location['sync_id'],
+        //         'location_code' => $location['location_code'],
+        //         'location_name' => $location['location_name'],
+        //         'updated_at' => $location['updated_at'],
+        //         'deleted_at' => $location['deleted_at']
+        //     ];
+        // }, $locationsData);
 
-        // Perform the upsert for locations
-        Location::upsert(
-            $locationsForUpsert,
-            ['sync_id'], // Unique key
-            ['location_code', 'location_name', 'updated_at', 'deleted_at'] // Columns to update
-        );
+        // // Perform the upsert for locations
+        // Location::upsert(
+        //     $locationsForUpsert,
+        //     ['sync_id'], // Unique key
+        //     ['location_code', 'location_name', 'updated_at', 'deleted_at'] // Columns to update
+        // );
 
-        // Handle relationships (sub_units)
-        foreach ($locationsData as $locationData) {
-            $location = Location::where('sync_id', $locationData['sync_id'])->first();
+        // // Handle relationships (sub_units)
+        // foreach ($locationsData as $locationData) {
+        //     $location = Location::where('sync_id', $locationData['sync_id'])->first();
 
-            if ($location && isset($locationData['sub_units'])) {
-                // Sync the sub_units relationship
-                $location->sub_unit()->sync($locationData['sub_units']);
-            }
-        }
+        //     if ($location && isset($locationData['sub_units'])) {
+        //         // Sync the sub_units relationship
+        //         $location->sub_unit()->sync($locationData['sub_units']);
+        //     }
+        // }
 
         return $this->responseCreated('Sync location successfully');
     }

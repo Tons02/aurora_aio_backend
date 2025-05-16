@@ -42,8 +42,8 @@ class RoleRequest extends FormRequest
                         "units",
                         "sub_units",
                         "locations",
-                        "role_management",
-                        "user_management"
+                        "role",
+                        "user"
 
                     ];
 
