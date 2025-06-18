@@ -10,6 +10,7 @@ use App\Models\AuroraStore\Checklist\Question;
 use App\Models\AuroraStore\Checklist\Section;
 use Essa\APIToolKit\Api\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ChecklistController extends Controller
 {
@@ -19,49 +20,143 @@ class ChecklistController extends Controller
     {
         $status = $request->query('status');
 
-        $checklist = Checklist::when($status === "inactive", function ($query) {
-            $query->onlyTrashed();
-        })
+        $checklist = Checklist::with('sections.questions.answers')
+            ->when($status === "inactive", function ($query) {
+                $query->onlyTrashed();
+            })
             ->orderBy('created_at', 'desc')
             ->useFilters()
             ->dynamicPaginate();
 
-        return $this->responseSuccess('Store display successfully', $checklist);
+        return $this->responseSuccess('Checklist display successfully', $checklist);
     }
 
     public function store(ChecklistRequest $request)
     {
-        $create_checklist = Checklist::create([
-            "title" => $request->title,
-            "description" => $request->description,
-        ]);
+        DB::beginTransaction(); // Start the transaction
 
-        $create_section = Section::create([
-            "title" => null,
-            "description" => null,
-            "point_per_item" => null,
-            "total_points" => null,
-        ]);
+        try {
 
-        return $create_checklist->sections()->attach($create_section->id);
+            // Create checklist
+            $checklist = Checklist::create([
+                "title" => $request->title,
+                "description" => $request->description,
+            ]);
 
+            $section = Section::create([
+                "title" => null,
+                "description" => null,
+                "point_per_item" => null,
+                "total_points" => null,
+                "checklist_id" => $checklist->id,
+            ]);
 
+            $question = Question::create([
+                "title" => null,
+                "description" => null,
+                "type" => null,
+                "required" => null,
+                "section_id" => $section->id,
+            ]);
 
-        $create_question = Question::create([
-            "title" => null,
-            "description" => null,
-            "type" => null,
-            "required" => null,
-        ]);
+            Answer::create([
+                "title" => null,
+                "points" => null,
+                "question_id" => $question->id,
+            ]);
 
-        and i want to get the id of checklist and also sync
+            DB::commit();
+            return $this->responseCreated('Checklist Successfully Created');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->responseServerError('Network Error Please Try Again');
+        }
+    }
 
-        $create_answer = Answer::create([
-            "title" => null,
-            "description" => null,
-            "points" => null,
-        ]);
+    public function update(ChecklistRequest $request)
+    {
+        DB::beginTransaction();
 
-        return $this->responseCreated('Checklist Successfully Created');
+        try {
+            $checklistData = $request->checklist;
+
+            // Update or Create Checklist
+            $checklist = Checklist::updateOrCreate(
+                ['id' => $checklistData['id']],
+                [
+                    'title' => $checklistData['title'],
+                    'description' => $checklistData['description'],
+                ]
+            );
+
+            // Keep track of section/question/answer IDs to avoid deleting them
+            $sectionIds = [];
+            $questionIds = [];
+            $answerIds = [];
+
+            foreach ($checklistData['sections'] as $sectionData) {
+                $section = Section::updateOrCreate(
+                    ['id' => $sectionData['id'] ?? null],
+                    [
+                        'title' => $sectionData['title'],
+                        'description' => $sectionData['description'],
+                        'point_per_item' => $sectionData['point_per_item'],
+                        'total_points' => $sectionData['total_points'],
+                        'checklist_id' => $checklist->id,
+                    ]
+                );
+
+                $sectionIds[] = $section->id;
+
+                foreach ($sectionData['questions'] as $questionData) {
+                    $question = Question::updateOrCreate(
+                        ['id' => $questionData['id'] ?? null],
+                        [
+                            'title' => $questionData['title'],
+                            'description' => $questionData['description'],
+                            'type' => $questionData['type'],
+                            'required' => $questionData['required'],
+                            'section_id' => $section->id,
+                        ]
+                    );
+
+                    $questionIds[] = $question->id;
+
+                    foreach ($questionData['answers'] as $answerData) {
+                        $answer = Answer::updateOrCreate(
+                            ['id' => $answerData['id'] ?? null],
+                            [
+                                'title' => $answerData['title'],
+                                'points' => $answerData['points'],
+                                'question_id' => $question->id,
+                            ]
+                        );
+
+                        $answerIds[] = $answer->id;
+                    }
+
+                    // Soft delete answers not included
+                    Answer::where('question_id', $question->id)
+                        ->whereNotIn('id', $answerIds)
+                        ->delete();
+                }
+
+                // Soft delete questions not included
+                Question::where('section_id', $section->id)
+                    ->whereNotIn('id', $questionIds)
+                    ->delete();
+            }
+
+            // Soft delete sections not included
+            Section::where('checklist_id', $checklist->id)
+                ->whereNotIn('id', $sectionIds)
+                ->delete();
+
+            DB::commit();
+            return $this->responseCreated('Checklist Successfully Updated');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->responseServerError('Network Error Please Try Again');
+        }
     }
 }

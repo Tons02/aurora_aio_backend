@@ -22,7 +22,37 @@ class ChecklistRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'checklist' => [
+                'required',
+            ],
+            'checklist.id' => [
+                'required',
+                'integer',
+                'exists:checklists,id'
+            ],
+            'checklist.title' => [
+                'required',
+                $this->route()->checklist
+                    ? "unique:checklists,title," . $this->route()->checklist
+                    : "unique:checklists,title",
+            ],
+            'checklist.description' => [
+                'required',
+            ],
+            'checklist.sections' => [
+                'required',
+                'array',
+            ],
+            'checklist.sections.*' => [
+                'required',
+                'array',
+                "distinct",
+            ],
+            'checklist.sections.*.id' => [
+                'required',
+                'integer',
+                "distinct",
+            ],
         ];
     }
 }

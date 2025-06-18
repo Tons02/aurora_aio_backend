@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('section_id')->constrained()->onDelete('cascade');
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->enum("type", ["multiple_choice", "paragraph", "checkbox", "likert-scale", "multiple_choice_grid", "dropdown"])->nullable();
-            $table->integer('order')->default(1);
-            $table->boolean('required')->nullable();
+            $table->boolean('required')->default(false);
             $table->timestamps();
             $table->softdeletes();
         });

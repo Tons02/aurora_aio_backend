@@ -20,20 +20,8 @@ class Checklist extends Model
 
     protected string $default_filters = ChecklistFilter::class;
 
-    public function checklist_sections()
-    {
-        return $this->belongsToMany(
-            Section::class,
-            "checklist_section",
-            'checklist_id',
-            'section_id',
-            "id",
-            "id"
-        );
-    }
-
     public function sections()
     {
-        return $this->belongsToMany(Section::class, 'checklist_section', 'checklist_id', 'section_id');
+        return $this->hasMany(Section::class);
     }
 }

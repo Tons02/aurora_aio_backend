@@ -14,6 +14,7 @@ class Question extends Model
 
     protected $fillable = [
         'id',
+        'section_id',
         'title',
         'description',
         'type',
@@ -21,4 +22,20 @@ class Question extends Model
     ];
 
     protected string $default_filters = QuestionFilter::class;
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class);
+    }
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
 }

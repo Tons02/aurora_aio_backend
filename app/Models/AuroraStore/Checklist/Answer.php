@@ -14,6 +14,7 @@ class Answer extends Model
 
     protected $fillable = [
         'id',
+        'question_id',
         'title',
         'description',
         'points',
@@ -21,4 +22,15 @@ class Answer extends Model
     ];
 
     protected string $default_filters = AnswerFilter::class;
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
 }

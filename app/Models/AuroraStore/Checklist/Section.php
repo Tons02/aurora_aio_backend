@@ -14,6 +14,7 @@ class Section extends Model
 
     protected $fillable = [
         'id',
+        'checklist_id',
         'title',
         'description',
         'point_per_item',
@@ -23,20 +24,19 @@ class Section extends Model
 
     protected string $default_filters = SectionFilter::class;
 
-    public function checklists()
+    public function checklist()
     {
-        return $this->belongsToMany(Checklist::class, 'checklist_section', 'section_id', 'checklist_id');
+        return $this->belongsTo(Checklist::class);
     }
 
-    public function section_question()
+    public function questions()
     {
-        return $this->belongsToMany(
-            Section::class,
-            "checklist_section",
-            'checklist_id',
-            'section_id',
-            "id",
-            "id"
-        );
+        return $this->hasMany(Question::class);
     }
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
 }
