@@ -36,12 +36,7 @@ class RoleRequest extends FormRequest
                 "min:1", // Ensure at least one permission is selected
                 function ($attribute, $value, $fail) {
                     $allowedValues = [
-                        "companies",
-                        "business_units",
-                        "departments",
-                        "units",
-                        "sub_units",
-                        "locations",
+                        "one_charging",
                         "role",
                         "user"
 

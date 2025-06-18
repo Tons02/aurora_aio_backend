@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api\UserManagement;
 
+use App\Exports\Masterlist\UsersExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserManagement\UserRequest;
 use App\Http\Resources\UserManagement\UserResource;
 use App\Models\UserManagement\User;
 use Essa\APIToolKit\Api\ApiResponse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -25,8 +27,6 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->useFilters()
             ->dynamicPaginate();
-
-
 
         if (!$pagination) {
             UserResource::collection($users);
@@ -46,13 +46,7 @@ class UserController extends Controller
             "last_name" => $request["personal_info"]["last_name"],
             "mobile_number" => $request["personal_info"]["mobile_number"],
             "gender" => $request["personal_info"]["gender"],
-
-            "company_id" => $request["personal_info"]["company_id"],
-            "business_unit_id" => $request["personal_info"]["business_unit_id"],
-            "department_id" => $request["personal_info"]["department_id"],
-            "unit_id" => $request["personal_info"]["unit_id"],
-            "sub_unit_id" => $request["personal_info"]["sub_unit_id"],
-            "location_id" => $request["personal_info"]["location_id"],
+            "one_charging_id" => $request["personal_info"]["one_charging_id"],
 
             "username" => $request["username"],
             "password" => $request["username"],
